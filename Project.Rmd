@@ -1,0 +1,49 @@
+---
+title: "Regression Models Project"
+author: "Mitch Harden"
+---
+
+## Executive Summary
+Here it is shown that changing from automatic transmission to manual transmission results in an *increase* in mpg. This analysis was performed by using backward stepwise regression from a full linear model to a reduced model and used a comparison ANOVA to show the goodness-of-fit. The assumption of normality of the reduced model was verified by showing no trends in the residuals.  A 95% confidence interval for each of the coefficients also showed that there is an increase in mpgfor manual transmissions..
+
+## Exploratory Data Analysis and Data Summary
+This data set has `r sum(!complete.cases(ToothGrowth))` incomplete cases, and each variable's summary statistics are
+``` {r, echo=FALSE}
+     data(mtcars)
+     summary(mtcars)
+```
+In the plot there are several variables that have a linear relationship with *mpg*.  The relationship between *am* and *mpg* appears to be linear.
+
+## Model Fit and Data Analysis
+To study the relationship of transmission to *mpg*, a liner model was as described above as the full model, as well as a reduced model using backward stepwise regression.  The summary of the full model fit is in the Appendix, while the summary of the reduced model is  
+``` {r, echo=FALSE}
+     full.model <- lm(mpg ~ ., data=mtcars)
+     reduced.model <- step(full.model, direction="backward", trace=FALSE)
+     summary(reduced.model)
+```
+This model is statistically significant and shows that changing from automatic transmission to manual transmission will add `r coef(reduced.model)[4]` *mpg* on average.  There appears to be no significant skew in this normal model.
+
+A comparison of the fill model to the reduced model by ANOVA:
+``` {r, echo=FALSE}
+     anova(full.model, reduced.model)
+```
+The Pr(>F) shows that the reduced model is not significantly different from the full model. The reduced model has fewer regressors (`r anova(full.model, reduced.model)[2,3]`).  The 95% confidence interval for *am* shows an increase in *mpg* by using manual transmission instead of automatic transmission.
+``` {r, echo=FALSE}
+     confint(reduced.model)
+```
+
+## Appendix
+``` {r, echo = FALSE}
+     pairs(mtcars, main = "Scatterplot of mtcars Data")
+```
+
+### Summary of full model fit:
+``` {r, echo = FALSE}
+     summary(full.model)
+```
+
+### Regression residuals for the reduced model:
+
+``` {r, echo = FALSE}
+     plot(reduced.model, which=1)
+```
